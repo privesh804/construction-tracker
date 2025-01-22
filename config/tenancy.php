@@ -19,8 +19,7 @@ return [
      */
     'central_domains' => [
         'localhost',
-        'projectcpt.store'
-        // '172.0.0.1'
+        env('APP_DOMAIN')
     ],
 
     /**
