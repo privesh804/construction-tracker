@@ -32,9 +32,9 @@ class SeedTenantUser implements ShouldQueue
         $this->tenant->run( function () 
         {
             $user = User::create([
-                'name' => fake()->name(),
-                'email' => 'a@b.com',
-                'password' => 'Pa$$w0rd!',
+                'name' => $this->tenant->name,
+                'email' => $this->tenant->name.'@cpt.store',
+                'password' => '123456',
             ]);
 
             $user->assignRole('admin');

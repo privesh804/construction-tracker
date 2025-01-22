@@ -52,7 +52,7 @@
                                         <td class="pl-2 border-r">{{ $key+1 }}</td>
                                         <td class="pl-2 border-r">{{ $tenant->name }}</td>
                                         <td class="pl-2 border-r">
-                                            <a target="_blank" href="{{ 'http://'.$tenant->domains->first()->domain.':8000' }}">{{ $tenant->domains->first()->domain }}</a>
+                                            <a target="_blank" href="{{ 'https://'.$tenant->domains->first()->domain }}">{{ $tenant->domains->first()->domain }}</a>
                                         </td>
                                         <td class="pl-2 border-r">{{ $tenant->id }}</td>
                                         <td class="pl-2 text-center">
