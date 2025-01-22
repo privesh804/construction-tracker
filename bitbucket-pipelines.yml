@@ -1,0 +1,26 @@
+---
+image: atlassian/default-image:3
+pipelines:
+  branches:
+    "{dev}":
+      - step:
+          name: Build and Test
+          script:
+            - pipe: atlassian/rsync-deploy:0.6.0
+              variables:
+                USER: $SSH_USER
+                SERVER: $SSH_SERVER
+                REMOTE_PATH: $REMOTE_PATH
+                LOCAL_PATH: ${BITBUCKET_CLONE_DIR}
+                DEBUG: "true"
+      - step:
+          name: Install Dependencies
+          script:
+            - pipe: atlassian/ssh-run:0.8.1
+              variables:
+                SSH_USER: $SSH_USER
+                SERVER: $SSH_SERVER
+                COMMAND: cd $REMOTE_PATH &&  cp -r /var/www/html/build/* /var/www/html/ && rm
+                  -rf build/ && composer install --no-interaction && php artisan
+                  migrate && php artisan optimize:clear && php artisan optimize
+                  && php artisan config:clear
