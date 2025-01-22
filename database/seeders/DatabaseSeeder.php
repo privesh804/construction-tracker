@@ -18,9 +18,9 @@ class DatabaseSeeder extends Seeder
         $faker = Factory::create();
 
         \App\Models\User::factory()->create([
-            'name' => fake()->name(),
-            'email' => 'a@b.com',
-            'password' => 'Pa$$w0rd!',
+            'name' => "Admin",
+            'email' => 'admin@cpt.com',
+            'password' => '123456',
         ]);
     }
 }
