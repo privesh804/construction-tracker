@@ -47,6 +47,7 @@ class RouteServiceProvider extends ServiceProvider
     {
         foreach ($this->centralDomains() as $domain) {
             Route::middleware('web')
+                ->prefix('backend')
                 ->domain($domain)
                 ->namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
@@ -56,7 +57,7 @@ class RouteServiceProvider extends ServiceProvider
     protected function mapApiRoutes()
     {
         foreach ($this->centralDomains() as $domain) {
-            Route::prefix('api')
+            Route::prefix('backend/api')
                 ->domain($domain)
                 ->middleware('api')
                 ->namespace($this->namespace)
