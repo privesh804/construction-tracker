@@ -23,19 +23,14 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 */
 
 Route::middleware([
-    'web',
+    'api',
     InitializeTenancyByDomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
 
-    Route::get('/', function () {
-        // dd(tenant()->toArray());
-        // return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
-        $users = User::all();
-        return view('app.welcome', [
-            'users' => $users,
-        ]);
-    })->name('welcome');
+    Route::get('test', function () {
+        return 'test-tenant-api';
+    });
     Route::get('/login', [HomeController::class, 'login'])->name('loginpage');
     Route::get('/register', [HomeController::class, 'register'])->name('registerpage');
     Route::get('/app/dashboard', [HomeController::class, 'dash'])->middleware(['tauth', 'verified'])->name('dash');

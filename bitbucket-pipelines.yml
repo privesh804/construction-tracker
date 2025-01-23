@@ -20,5 +20,4 @@ pipelines:
               variables:
                 SSH_USER: $SSH_USER
                 SERVER: $SSH_SERVER
-                COMMAND: cd $REMOTE_PATH &&  cp -r /var/www/backend/build/* /var/www/backend/ && rm
-                  -rf build && composer install --no-interaction && php artisan migrate && php artisan optimize:clear && php artisan config:clear && php artisan route:clear
+                COMMAND: cd $REMOTE_PATH &&  cp -r /var/www/backend/build/* /var/www/backend/ && rm -rf build && composer install --no-interaction && php artisan migrate && php artisan optimize:clear && php artisan config:clear && php artisan route:clear
