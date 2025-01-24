@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Modules\SuperAdmin\App\Http\Controllers\AuthenticatedSessionController;
 
 /*
     |--------------------------------------------------------------------------
@@ -16,4 +17,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum'])->prefix('v1')->name('api.')->group(function () {
     Route::get('superadmin', fn (Request $request) => $request->user())->name('superadmin');
+});
+
+Route::middleware(['auth:guest'])->prefix('v1')->group(function () {
+    Route::post('login',[AuthenticatedSessionController::class, "login"]);
+
 });
