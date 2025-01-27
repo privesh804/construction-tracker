@@ -6,30 +6,36 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Hash;
+use Modules\SuperAdmin\App\Models\User;
 
 
 class AuthenticatedSessionController extends Controller
 {
     function login(Request $request){
-        $request->validate([
-            'email' => 'required|email:rfc,dns,spoof',
-            'password' => 'required',
-        ]);
-
+        
         try {
+            $request->validate([
+                'email' => 'required|email:rfc,dns',
+                'password' => 'required',
+            ]);
 
-            $postArr = $request->all();
 
             $admin = User::where([
-                'email' => $postArr['email'],
+                'email' => $request->email,
             ])->firstOrFail();
 
-            if(Hash::check($postArr['pasword'], $admin->password)){
-                $token = $admin->createToken($request->token_name);
-                return response()->json(['token' => $token->plainTextToken]);
+            if(Hash::check($request->password, $admin->password)){
+
+                $admin->tokens()->delete();
+
+                $token = $admin->createToken('Super-Admin')->plainTextToken;
+                return response()->json(['token' => $token]);
             } else {
                 throw new \Exception("The provided credentials do not match our records.", 401);
             }    
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['error' => $e->validator->errors()], 422);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }

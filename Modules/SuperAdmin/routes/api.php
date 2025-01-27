@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Modules\SuperAdmin\App\Http\Controllers\AuthenticatedSessionController;
+use Modules\SuperAdmin\App\Http\Controllers\{AuthenticatedSessionController,TenantController};
 
 /*
     |--------------------------------------------------------------------------
@@ -15,8 +15,11 @@ use Modules\SuperAdmin\App\Http\Controllers\AuthenticatedSessionController;
     |
 */
 
-Route::middleware(['auth:sanctum'])->prefix('v1')->name('api.')->group(function () {
-    Route::get('superadmin', fn (Request $request) => $request->user())->name('superadmin');
+Route::prefix('v1')->group(function () {
+    Route::post('login',[AuthenticatedSessionController::class, "login"]);
+    // Route::middleware(['auth:sanctum'])->group(function(){
+        Route::post('create-tenant', [TenantController::class, 'store'])->name('tenant.create');
+    // });
 });
 
 Route::middleware(['auth:guest'])->prefix('v1')->group(function () {
