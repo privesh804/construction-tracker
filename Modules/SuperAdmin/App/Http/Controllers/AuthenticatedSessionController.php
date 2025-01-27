@@ -19,15 +19,17 @@ class AuthenticatedSessionController extends Controller
                 'password' => 'required',
             ]);
 
-            $postArr = $request->all();
 
             $admin = User::where([
-                'email' => $postArr['email'],
+                'email' => $request->email,
             ])->firstOrFail();
 
-            if(Hash::check($postArr['password'], $admin->password)){
-                $token = $admin->createToken('Super-Admin');
-                return response()->json(['token' => $token->plainTextToken]);
+            if(Hash::check($request->password, $admin->password)){
+
+                $admin->tokens()->delete();
+
+                $token = $admin->createToken('Super-Admin')->plainTextToken;
+                return response()->json(['token' => $token]);
             } else {
                 throw new \Exception("The provided credentials do not match our records.", 401);
             }    
