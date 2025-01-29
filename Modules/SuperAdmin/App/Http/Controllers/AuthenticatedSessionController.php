@@ -28,7 +28,7 @@ class AuthenticatedSessionController extends Controller
 
                 $admin->tokens()->delete();
 
-                $token = $admin->createToken('Super-Admin')->plainTextToken;
+                $token = $admin->createToken('Super-Admin', ['*'], now()->addDay())->plainTextToken;
                 return response()->json(['token' => $token]);
             } else {
                 throw new \Exception("The provided credentials do not match our records.", 401);

@@ -36,7 +36,7 @@ class SeedTenantUser implements ShouldQueue
                 'email' => $this->tenant->name.'@cpt.store',
                 'password' => '123456',
             ]);
-
+            $user->guard_name = 'sanctum';
             $user->assignRole('admin');
         });
     }
