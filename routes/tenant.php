@@ -38,7 +38,11 @@ Route::middleware([
     Route::post('/login', [AuthenticatedSessionController::class, 'login'])->name('login.tenant');
 
     Route::middleware('auth:sanctum')->group(function(){
-        Route::get('create-user', [TeamController::class, 'create'])->name('tenant.teammember.create');
+        Route::get('user/create', [TeamController::class, 'create'])->name('tenant.teammember.create');
+        Route::post('user/store', [TeamController::class, 'store'])->name('tenant.teammember.store');
+        Route::get('user/{id}', [TeamController::class, 'show'])->name('tenant.teammember.show');
+        Route::get('user/{id}/edit', [TeamController::class, 'edit'])->name('tenant.teammember.edit');
+        Route::put('user/{id}/update', [TeamController::class, 'update'])->name('tenant.teammember.update');
     });
 
     /*Route::get('/login', [HomeController::class, 'login'])->name('loginpage');
