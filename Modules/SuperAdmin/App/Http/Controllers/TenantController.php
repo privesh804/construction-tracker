@@ -17,7 +17,7 @@ class TenantController extends Controller
     {
 
         $request->validate([
-            'name' => 'required|min:5|max:100',
+            'name' => 'required|min:2|max:100',
             'domain' => ['required'],
         ]);
 

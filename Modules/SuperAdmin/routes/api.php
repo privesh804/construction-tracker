@@ -2,7 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use Modules\SuperAdmin\App\Http\Controllers\{AuthenticatedSessionController,TenantController};
+use Modules\SuperAdmin\App\Http\Controllers\{AuthenticatedSessionController,TenantController, TeamController};
 
 /*
     |--------------------------------------------------------------------------
@@ -18,6 +18,10 @@ use Modules\SuperAdmin\App\Http\Controllers\{AuthenticatedSessionController,Tena
 Route::prefix('v1')->group(function () {
     Route::post('login',[AuthenticatedSessionController::class, "login"]);
     Route::middleware(['auth:sanctum'])->group(function(){
+        /** Org Management */
         Route::post('create-tenant', [TenantController::class, 'store'])->name('tenant.create');
+
+        /** Team Management */
+        Route::post('create-user', [TeamController::class, 'store'])->name('team.create');
     });
 });
