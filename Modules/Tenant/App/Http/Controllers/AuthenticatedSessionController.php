@@ -1,14 +1,13 @@
 <?php
 
-namespace Modules\SuperAdmin\App\Http\Controllers;
+namespace Modules\Tenant\App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
-use Modules\SuperAdmin\App\Models\User;
-
+use Modules\Tenant\App\Models\User;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -21,15 +20,15 @@ class AuthenticatedSessionController extends Controller
             ]);
 
 
-            $admin = User::where([
+            $tenantuser = User::where([
                 'email' => $request->email,
             ])->firstOrFail();
 
-            if(Hash::check($request->password, $admin->password)){
+            if(Hash::check($request->password, $tenantuser->password)){
 
-                $admin->tokens()->delete();
+                $tenantuser->tokens()->delete();
 
-                $token = $admin->createToken('Super-Admin', ['*'], now()->addDay())->plainTextToken;
+                $token = $tenantuser->createToken('Tenant', ['*'], now()->addDay())->plainTextToken;
                 return response()->json(['token' => $token]);
             } else {
                 throw new \Exception("The provided credentials do not match our records.", 401);
@@ -41,3 +40,4 @@ class AuthenticatedSessionController extends Controller
         }
     }
 }
+

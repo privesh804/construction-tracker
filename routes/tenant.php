@@ -10,6 +10,14 @@ use App\Http\Controllers\Application\AdminController;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
+
+
+/**
+ * 
+ */
+use Modules\Tenant\App\Http\Controllers\{AuthenticatedSessionController,TeamController};
+
+
 /*
 |--------------------------------------------------------------------------
 | Tenant Routes
@@ -26,17 +34,18 @@ Route::middleware([
     'api',
     InitializeTenancyByDomain::class,
     PreventAccessFromCentralDomains::class,
-])->prefix('api/v1')->group(function () {
+])->prefix('api/v1/tenant')->group(function () {
+    Route::post('/login', [AuthenticatedSessionController::class, 'login'])->name('login.tenant');
 
-    Route::get('test', function () {
-        return 'test-tenant-api';
+    Route::middleware('auth:sanctum')->group(function(){
+        Route::get('create-user', [TeamController::class, 'create'])->name('tenant.teammember.create');
     });
-    Route::get('/login', [HomeController::class, 'login'])->name('loginpage');
+
+    /*Route::get('/login', [HomeController::class, 'login'])->name('loginpage');
     Route::get('/register', [HomeController::class, 'register'])->name('registerpage');
     Route::get('/app/dashboard', [HomeController::class, 'dash'])->middleware(['tauth', 'verified'])->name('dash');
 
     Route::post('/register/request', [HomeController::class, 'registerrequest'])->name('register.tenant');
-    Route::post('/login/request', [HomeController::class, 'logvalidate'])->name('login.tenant');
     Route::get('/profile', [HomeController::class, 'profile'])->middleware(['tauth', 'verified'])->name('profile.tenant');
     Route::post('/logout/request', [HomeController::class, 'logoutrequest'])->middleware(['auth', 'verified'])->name('logout.tenant');
 
@@ -46,5 +55,7 @@ Route::middleware([
     Route::post('/admin/user/edit', [AdminController::class, 'edit'])->middleware(['tauth', 'verified'])->name('admin.user.edit');
     Route::get('/admin/user/{id}/reset', [AdminController::class, 'reset'])->middleware(['tauth', 'verified'])->name('admin.reset.user');
     Route::get('/admin/user/{id}/delete', [AdminController::class, 'delete'])->middleware(['tauth', 'verified'])->name('admin.delete.user');
-    Route::post('/admin/edit/user/roles', [AdminController::class, 'roles'])->name('admin.edit.user.role');
+    Route::post('/admin/edit/user/roles', [AdminController::class, 'roles'])->name('admin.edit.user.role');*/
+
+
 });
