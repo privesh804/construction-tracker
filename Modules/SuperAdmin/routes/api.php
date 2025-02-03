@@ -17,9 +17,9 @@ use Modules\SuperAdmin\App\Http\Controllers\{AuthenticatedSessionController,Tena
 
 Route::prefix('v1')->group(function () {
     Route::post('login',[AuthenticatedSessionController::class, "login"]);
-    // Route::middleware(['auth:sanctum'])->group(function(){
+    Route::middleware(['auth:sanctum'])->group(function(){
         Route::post('create-tenant', [TenantController::class, 'store'])->name('tenant.create');
-    // });
+    });
 });
 
 Route::middleware(['auth:guest'])->prefix('v1')->group(function () {

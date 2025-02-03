@@ -14,7 +14,8 @@ class TenantRoleSeed extends Seeder
     public function run(): void
     {
         Role::create(['name' => 'admin']);
-        Role::create(['name' => 'editor']);
-        Role::create(['name' => 'subeditor']);
+        Role::create(['name' => 'contractors']);
+        Role::create(['name' => 'clients']);
+        Role::create(['name' => 'internal team']);
     }
 }

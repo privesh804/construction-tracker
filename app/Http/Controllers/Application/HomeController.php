@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class HomeController extends Controller
 {
@@ -39,20 +40,36 @@ class HomeController extends Controller
             'password' => $request->password,
         ]);
         
-        return redirect()->route('loginpage');
+
+        return response()->json([],201);
+        // return redirect()->route('loginpage');
     }
 
     public function logvalidate (Request $request) {
-        // dd($request->all());
-        $user = User::where('email', $request->email)->get();
-        switch ($request) {
-            case ($user !== null && Auth::attempt(['email' => $request->email, 'password' => $request->password])):
-                return redirect()->route('dash');
-                break;
-            
-            default:
-                throw ValidationException::withMessages(['email' => trans('auth.failed')]);
-                break;
+        try {
+            $request->validate([
+                'email' => 'required|email:rfc,dns',
+                'password' => 'required',
+            ]);
+
+
+            $tenantAdmin = User::where([
+                'email' => $request->email,
+            ])->firstOrFail();
+
+            if(Hash::check($request->password, $tenantAdmin->password)){
+
+                $tenantAdmin->tokens()->delete();
+
+                $token = $tenantAdmin->createToken('Tenant-Admin', ['*'], now()->addDay())->plainTextToken;
+                return response()->json(['token' => $token]);
+            } else {
+                throw new \Exception("The provided credentials do not match our records.", 401);
+            }    
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['error' => $e->validator->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
         }
     }
 

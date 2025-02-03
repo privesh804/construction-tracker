@@ -33,10 +33,10 @@ class SeedTenantUser implements ShouldQueue
         {
             $user = User::create([
                 'name' => $this->tenant->name,
-                'email' => $this->tenant->name.'@cpt.store',
+                'email' => $this->tenant->name.'@projectcpt.store',
                 'password' => '123456',
             ]);
-
+            $user->guard_name = 'sanctum';
             $user->assignRole('admin');
         });
     }
