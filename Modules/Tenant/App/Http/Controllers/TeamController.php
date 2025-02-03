@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Models\Role;
+use Modules\Tenant\App\Models\User;
+use DB;
 
 class TeamController extends Controller
 {
@@ -20,7 +23,7 @@ class TeamController extends Controller
     public function create()
     {
         try {
-            return response()->json(['roles' => ""], 200);
+            return response()->json(['roles' => Role::get()->pluck('name')], 200);
         } catch (\Exception $e) {
             return response()->json(["message"=> "Error", "error" => $e->getMessage()], 400);
         }
@@ -34,20 +37,26 @@ class TeamController extends Controller
         $request->validate([
             'name' => 'required|min:2|max:100',
             'email' => 'required|email:rfc,dns',
+            'password' => 'required',
             'role' => 'required',
         ]);
 
+        DB::beginTransaction();
         try {
 
-            $tenant = Tenant::create([
+            $team = User::create([
                 'name' => $request->name,
+                'email' => $request->email,
+                'password' => $request->password,
             ]);
 
-            $tenant->domains()->create([
-                'domain' => Str::lower(str_replace(' ', '', $request->domain)).'.'.config('app.domain'),
-            ]); 
-            return response()->json(['organisation' => $tenant], 201);
+            $team->guard_name = 'sanctum';
+            $team->assignRole($request->role);
+
+            DB::commit();
+            return response()->json(['user' => $team], 201);
         } catch (\Exception $e) {
+            DB::rollback();
             return response()->json(["message"=> "Error", "error" => $e->getMessage()], 400);
         }
     }
