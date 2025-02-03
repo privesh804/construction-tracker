@@ -26,7 +26,7 @@ Route::middleware([
     'api',
     InitializeTenancyByDomain::class,
     PreventAccessFromCentralDomains::class,
-])->group(function () {
+])->prefix('api/v1')->group(function () {
 
     Route::get('test', function () {
         return 'test-tenant-api';
@@ -47,15 +47,4 @@ Route::middleware([
     Route::get('/admin/user/{id}/reset', [AdminController::class, 'reset'])->middleware(['tauth', 'verified'])->name('admin.reset.user');
     Route::get('/admin/user/{id}/delete', [AdminController::class, 'delete'])->middleware(['tauth', 'verified'])->name('admin.delete.user');
     Route::post('/admin/edit/user/roles', [AdminController::class, 'roles'])->name('admin.edit.user.role');
-
-
-
-
-
-
-
-
-
-
-    
 });
