@@ -36,7 +36,7 @@ class TeamController extends Controller
     {
         $request->validate([
             'name' => 'required|min:2|max:100',
-            'email' => 'required|email:rfc,dns',
+            'email' => 'required|email:rfc,dns|unique:users,email',
             'password' => 'required',
             'role' => 'required',
         ]);
@@ -54,7 +54,7 @@ class TeamController extends Controller
             $team->assignRole($request->role);
 
             DB::commit();
-            return response()->json(['user' => $team], 201);
+            return response()->json(['user' => $request->all()], 201);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json(["message"=> "Error", "error" => $e->getMessage()], 400);
@@ -66,7 +66,18 @@ class TeamController extends Controller
      */
     public function show($id)
     {
-        return view('tenant::show');
+        try {
+            $user = User::findOrFail($id);
+
+            $user->role = $user->roles->map(function($role){
+                return $role->name;
+            });
+            unset($user->roles);
+
+            return response()->json($user, 200);
+        } catch (\Throwable $th) {
+            return response()->json(["message"=> "Error", "error" => $th->getMessage()], 400);
+        }
     }
 
     /**
@@ -74,15 +85,56 @@ class TeamController extends Controller
      */
     public function edit($id)
     {
-        return view('tenant::edit');
+        try {
+            $user = User::findOrFail($id);
+
+            $user->role = $user->roles->map(function($role){
+                return $role->name;
+            });
+            unset($user->roles);
+
+            return response()->json(["user"=>$user, 'roles' => Role::get()->pluck('name')], 200);
+        } catch (\Throwable $th) {
+            return response()->json(["message"=> "Error", "error" => $th->getMessage()], 400);
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $id): RedirectResponse
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'name' => 'required|min:2|max:100',
+            'email' => 'required|email:rfc,dns|unique:users,email,'.$id,
+            'password' => 'sometimes',
+            'role' => 'sometimes',
+        ]);
+
+        DB::beginTransaction();
+        try {
+
+            $user = User::findOrFail($id);
+            $user->name = $request->name;
+            $user->email = $request->email;
+            if($request->password){
+                $user->password = \Hash::make($request->password);
+            }
+            $user->save();
+
+            if($request->role && $request->role != $user->role){
+                $user->guard_name = 'sanctum';
+                // $user->removeRole($user->role);
+                $user->roles()->detach();
+                $user->assignRole($request->role);
+            }
+
+            DB::commit();
+            return response()->json(['user' => $request->all()], 201);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json(["message"=> "Error", "error" => $e->getMessage()], 400);
+        }
     }
 
     /**
