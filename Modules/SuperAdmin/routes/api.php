@@ -17,8 +17,12 @@ use Modules\SuperAdmin\App\Http\Controllers\{AuthenticatedSessionController,Tena
 
 Route::prefix('v1')->group(function () {
     Route::post('login',[AuthenticatedSessionController::class, "login"]);
+    
+    Route::get('{hash}/verify', [TenantController::class, 'verifyInvite'])->name('tenant.verify-invite');
+
     Route::middleware(['auth:sanctum'])->group(function(){
         /** Org Management */
+        Route::post('invite-tenant', [TenantController::class, 'sendInvite'])->name('tenant.send-invite');
         Route::post('create-tenant', [TenantController::class, 'store'])->name('tenant.create');
 
         /** Team Management */
