@@ -23,15 +23,15 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware(['auth:sanctum'])->group(function(){
         /** Org Management */
-        Route::post('invite-tenant', [TenantController::class, 'sendInvite'])->name('tenant.send-invite');
-        Route::post('create-tenant', [TenantController::class, 'store'])->name('tenant.create');
+        Route::post('invite-tenant', [TenantController::class, 'sendInvite'])->name('tenant.send-invite')->middleware('can:tenant-invite');
+        Route::post('create-tenant', [TenantController::class, 'store'])->name('tenant.create')->middleware('can:tenant-create');
 
         /** Team Management */
-        Route::get('user', [TeamController::class, 'index'])->name('teammember.index');
-        Route::get('user/create', [TeamController::class, 'create'])->name('teammember.create');
-        Route::post('user/store', [TeamController::class, 'store'])->name('teammember.store');
-        Route::get('user/{id}', [TeamController::class, 'show'])->name('teammember.show');
-        Route::get('user/{id}/edit', [TeamController::class, 'edit'])->name('teammember.edit');
-        Route::put('user/{id}/update', [TeamController::class, 'update'])->name('teammember.update');
+        Route::get('user', [TeamController::class, 'index'])->name('teammember.index')->middleware('can:team-list');
+        Route::get('user/create', [TeamController::class, 'create'])->name('teammember.create')->middleware('can:team-create');
+        Route::post('user/store', [TeamController::class, 'store'])->name('teammember.store')->middleware('can:team-create');
+        Route::get('user/{id}', [TeamController::class, 'show'])->name('teammember.show')->middleware('can:team-list');
+        Route::get('user/{id}/edit', [TeamController::class, 'edit'])->name('teammember.edit')->middleware('can:team-update');
+        Route::put('user/{id}/update', [TeamController::class, 'update'])->name('teammember.update')->middleware('can:team-update');
     });
 });
