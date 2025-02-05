@@ -17,10 +17,24 @@ class DatabaseSeeder extends Seeder
 
         $faker = Factory::create();
 
-        \App\Models\User::factory()->create([
+        $roles = ['admin', 'operator', 'internal-team'];
+
+        foreach ($roles as $key => $role) {
+            \App\Models\Role::create([
+                'name' => $role,
+                'guard_name' => 'sanctum',
+            ]);
+        }
+
+        $user = \App\Models\User::factory()->create([
             'name' => "Admin",
             'email' => 'admin@cpt.com',
             'password' => '123456',
         ]);
+
+        $user->guard_name = 'sanctum';
+        $user->assignRole('admin');
+
+
     }
 }

@@ -54,9 +54,9 @@ class TenantController extends Controller
                 ->whereDate("valid_upto", ">=",now())->first();
 
             if(isset($invite) && !empty($invite)){
-                return response()->json(['status'=>'valid'], 200);
+                return redirect(env('FRONTAPP_URL_TENANT').$code);
             } else {
-                return response()->json(['status'=>'expired.'], 410);
+                return redirect(env('FRONTAPP_URL_TENANT')."invalid");
             }
 
 

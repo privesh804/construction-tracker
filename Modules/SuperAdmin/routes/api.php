@@ -17,6 +17,7 @@ use Modules\SuperAdmin\App\Http\Controllers\{AuthenticatedSessionController,Tena
 
 Route::prefix('v1')->group(function () {
     Route::post('login',[AuthenticatedSessionController::class, "login"]);
+    Route::post('email-verify',[AuthenticatedSessionController::class, "checkEmail"]);
     
     Route::get('{hash}/verify', [TenantController::class, 'verifyInvite'])->name('tenant.verify-invite');
 
