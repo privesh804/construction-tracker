@@ -1,13 +1,13 @@
 <?php
 
-namespace Modules\Tenant\App\Http\Controllers;
+namespace Modules\SuperAdmin\App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\Role;
-use Modules\Tenant\App\Models\User;
+use Modules\SuperAdmin\App\Models\User;
 use DB;
 
 class TeamController extends Controller

@@ -77,7 +77,7 @@ class AuthenticatedSessionController extends Controller
 
             if(Hash::check($request->password, $admin->password)){
 
-                $admin->tokens()->delete();
+                // $admin->tokens()->delete();
 
                 $token = $admin->createToken('Super-Admin', ['*'], now()->addDay())->plainTextToken;
                 return response()->json(['token' => $token]);

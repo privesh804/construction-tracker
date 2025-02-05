@@ -27,6 +27,11 @@ Route::prefix('v1')->group(function () {
         Route::post('create-tenant', [TenantController::class, 'store'])->name('tenant.create');
 
         /** Team Management */
-        Route::post('create-user', [TeamController::class, 'store'])->name('team.create');
+        Route::get('user', [TeamController::class, 'index'])->name('teammember.index');
+        Route::get('user/create', [TeamController::class, 'create'])->name('teammember.create');
+        Route::post('user/store', [TeamController::class, 'store'])->name('teammember.store');
+        Route::get('user/{id}', [TeamController::class, 'show'])->name('teammember.show');
+        Route::get('user/{id}/edit', [TeamController::class, 'edit'])->name('teammember.edit');
+        Route::put('user/{id}/update', [TeamController::class, 'update'])->name('teammember.update');
     });
 });

@@ -38,6 +38,7 @@ Route::middleware([
     Route::post('/login', [AuthenticatedSessionController::class, 'login'])->name('login.tenant');
 
     Route::middleware('auth:sanctum')->group(function(){
+        Route::get('user', [TeamController::class, 'index'])->name('teammember.index');
         Route::get('user/create', [TeamController::class, 'create'])->name('tenant.teammember.create');
         Route::post('user/store', [TeamController::class, 'store'])->name('tenant.teammember.store');
         Route::get('user/{id}', [TeamController::class, 'show'])->name('tenant.teammember.show');
