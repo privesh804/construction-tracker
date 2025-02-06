@@ -39,6 +39,12 @@ class DatabaseSeeder extends Seeder
                 'create',
                 'update',
                 'delete'
+            ],
+            'role' => [
+                'list',
+                'create',
+                'update',
+                'delete'
             ]
         ];
 
@@ -53,7 +59,7 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        $user = \App\Models\User::updateOrCreate([
+        $user = \App\Models\User::firstOrCreate([
             'email' => 'admin@cpt.com',
         ],[
             'name' => "Admin",

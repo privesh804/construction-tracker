@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Tenant\App\Http\Controllers;
+namespace Modules\SuperAdmin\App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
@@ -64,9 +64,10 @@ class RolePermissionController extends Controller
     {
         try {
             $role = Role::findOrFail($id);
-            $role->permissions = $role->permissions;
+            $role->permission = $role->permissions->pluck('uuid');
+            unset($role->permissions);
 
-            return response()->json(["role"=>$role, 'permission'=>  Permission::latest('created_at')->get()], 200);
+            return response()->json(["role"=>$role, 'permissions'=>  Permission::latest('created_at')->get()], 200);
         } catch (\Throwable $th) {
             return response()->json(["message"=> "Error", "error" => $th->getMessage()], 400);
         }

@@ -132,7 +132,7 @@ class TeamController extends Controller
             }
 
             DB::commit();
-            return response()->json(['user' => $request->all()], 201);
+            return response()->json(['user' => $request->all()], 200);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json(["message"=> "Error", "error" => $e->getMessage()], 400);
