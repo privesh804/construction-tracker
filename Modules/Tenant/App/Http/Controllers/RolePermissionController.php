@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\{Role, Permission};
 use DB;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 
 class RolePermissionController extends Controller
 {
@@ -16,7 +17,16 @@ class RolePermissionController extends Controller
      */
     public function index(Request $request)
     {
-        $roles = Role::whereNot('name', 'admin')->latest('created_at')->get();
+        $roles = Role::with('permissions')->whereNot('name', 'admin')->latest('created_at')->get();
+        
+
+        
+        if(isset($roles) && !empty($roles)){
+            foreach ($roles as $key => &$value) {
+                $value->permission = collect($value->permissions)->pluck('uuid')->toArray();
+                unset($value->permissions);
+            }
+        }
 
         return response()->json(['data'=>$roles]);
     }

@@ -26,7 +26,7 @@ class AuthenticatedSessionController extends Controller
 
             if(Hash::check($request->password, $tenantuser->password)){
 
-                $tenantuser->tokens()->delete();
+                // $tenantuser->tokens()->delete();
 
                 $token = $tenantuser->createToken('Tenant', ['*'], now()->addDay())->plainTextToken;
                 return response()->json(['token' => $token]);
