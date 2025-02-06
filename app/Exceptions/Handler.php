@@ -34,7 +34,7 @@ class Handler extends ExceptionHandler
             return response()->json([
                 'responseMessage' => 'You do not have the required authorization.',
                 'responseStatus'  => 403,
-            ]);
+            ],403);
         }
 
         return parent::render($request, $exception);

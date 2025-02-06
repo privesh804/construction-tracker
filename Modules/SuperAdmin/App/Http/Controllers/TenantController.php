@@ -18,6 +18,7 @@ class TenantController extends Controller
 
     public function sendInvite(Request $request)
     {
+
         $request->validate([
             'email' => 'required|email:rfc,dns'
         ]);

@@ -48,7 +48,7 @@ Route::middleware([
         Route::get('user', [TeamController::class, 'index'])->name('tenant.teammember.index');
         
         /** Roles Permission */
-        Route::get('role', [RolePermissionController::class, 'index'])->name('role.index'); //->middleware('can:role-list');
+        Route::get('role', [RolePermissionController::class, 'index'])->name('role.index')->middleware('can:role-list');
         Route::get('permission', [RolePermissionController::class, 'indexP'])->name('role.indexp'); //->middleware('can:role-list');
         Route::post('role/store', [RolePermissionController::class, 'store'])->name('role.store'); //->middleware('can:role-create');
         Route::get('role/{id}/edit', [RolePermissionController::class, 'edit'])->name('role.edit'); //->middleware('can:role-create');

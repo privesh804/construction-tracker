@@ -59,7 +59,7 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        $user = \App\Models\User::firstOrCreate([
+        $user = \Modules\SuperAdmin\App\Models\User::firstOrCreate([
             'email' => 'admin@cpt.com',
         ],[
             'name' => "Admin",

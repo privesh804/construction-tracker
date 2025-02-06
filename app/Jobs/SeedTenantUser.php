@@ -8,7 +8,8 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Faker\Factory;
-use App\Models\{Tenant, User};
+use App\Models\{Tenant};
+use Modules\Tenant\App\Models\User;
 
 class SeedTenantUser implements ShouldQueue
 {
