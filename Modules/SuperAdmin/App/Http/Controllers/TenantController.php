@@ -20,7 +20,7 @@ class TenantController extends Controller
     {
 
         $request->validate([
-            'email' => 'required|email:rfc,dns'
+            'email' => 'required|email:rfc,dns|unique:invite_tenants,email'
         ]);
 
         try {
@@ -43,7 +43,7 @@ class TenantController extends Controller
             return response()->json(["url"=>$url], 201);
 
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return response()->json(['message'=>'Error', 'errors' => $e->getMessage()], 400);
         }
 
     }
@@ -62,7 +62,7 @@ class TenantController extends Controller
 
 
         } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+            return response()->json(['message'=>'Error', 'error' => $e->getMessage()], 400);
         }
     }
 
