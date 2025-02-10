@@ -27,19 +27,19 @@ Route::prefix('v1')->group(function () {
         Route::post('create-tenant', [TenantController::class, 'store'])->name('tenant.create')->middleware('permission:tenant-create');
 
         /** Team Management */
-        Route::get('user', [TeamController::class, 'index'])->name('teammember.index')->middleware('permission:team-list');
-        Route::get('user/create', [TeamController::class, 'create'])->name('teammember.create')->middleware('permission:team-create');
-        Route::post('user/store', [TeamController::class, 'store'])->name('teammember.store')->middleware('permission:team-create');
-        Route::get('user/{id}', [TeamController::class, 'show'])->name('teammember.show')->middleware('permission:team-list');
-        Route::get('user/{id}/edit', [TeamController::class, 'edit'])->name('teammember.edit')->middleware('permission:team-update');
-        Route::put('user/{id}/update', [TeamController::class, 'update'])->name('teammember.update')->middleware('permission:team-update');
+        Route::get('user', [TeamController::class, 'index'])->name('teammember.index'); //->middleware('permission:team-list');
+        Route::get('user/create', [TeamController::class, 'create'])->name('teammember.create'); //->middleware('permission:team-create');
+        Route::post('user/store', [TeamController::class, 'store'])->name('teammember.store'); //->middleware('permission:team-create');
+        Route::get('user/{id}', [TeamController::class, 'show'])->name('teammember.show'); //->middleware('permission:team-list');
+        Route::get('user/{id}/edit', [TeamController::class, 'edit'])->name('teammember.edit'); //->middleware('permission:team-update');
+        Route::put('user/{id}/update', [TeamController::class, 'update'])->name('teammember.update'); //->middleware('permission:team-update');
 
         /** Roles Permission */
-        Route::get('role', [RolePermissionController::class, 'index'])->name('role.index')->middleware('permission:role-list');
-        Route::get('permission', [RolePermissionController::class, 'indexP'])->name('role.indexp')->middleware('permission:role-list');
-        Route::post('role/store', [RolePermissionController::class, 'store'])->name('role.store')->middleware('permission:role-create');
-        Route::get('role/{id}/edit', [RolePermissionController::class, 'edit'])->name('role.edit')->middleware('permission:role-create');
-        Route::put('role/{id}/update', [RolePermissionController::class, 'update'])->name('role.update')->middleware('permission:role-update');
-        Route::post('role/{id}/permission', [RolePermissionController::class, 'assignPermission'])->name('role.assignpermission')->middleware('permission:role-update');
+        Route::get('role', [RolePermissionController::class, 'index'])->name('role.index'); //->middleware('permission:role-list');
+        Route::get('permission', [RolePermissionController::class, 'indexP'])->name('role.indexp'); //->middleware('permission:role-list');
+        Route::post('role/store', [RolePermissionController::class, 'store'])->name('role.store'); //->middleware('permission:role-create');
+        Route::get('role/{id}/edit', [RolePermissionController::class, 'edit'])->name('role.edit'); //->middleware('permission:role-create');
+        Route::put('role/{id}/update', [RolePermissionController::class, 'update'])->name('role.update'); //->middleware('permission:role-update');
+        Route::post('role/{id}/permission', [RolePermissionController::class, 'assignPermission'])->name('role.assignpermission'); //->middleware('permission:role-update');
     });
 });

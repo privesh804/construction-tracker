@@ -12,12 +12,61 @@ use DB;
 
 class TeamController extends Controller
 {
+    protected $pagelimit = 10;
+    protected $page = 1;
+    protected $search = [];
+    protected $sort = [];
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $team = User::with('roles:name')->get();
+
+        $paginateQuery = $request->all();
+
+        if($paginateQuery ?? false){
+            $this->pagelimit = $paginateQuery['pageSize'] ?? 10;
+            $this->page = $paginateQuery['pageIndex'] ?? 1;
+            $this->search = $paginateQuery['searchText'] ?? [];
+            $this->sort = $paginateQuery['sorting'] ?? [];
+        }
+
+        $team = User::with('roles:name');
+
+        $columns = [
+            'name',
+            'email',
+            'contact',
+            'role',
+            'status'
+        ];
+
+        if(isset($this->search) && !empty($this->search)){
+            $this->pagelimit = 10;
+            $this->page = 1;
+            $team->where(function($query) use($columns){
+                foreach ($columns as $column) {
+                    if($column != 'role'){
+                        $query->orWhere($column, "like", $this->search."%");
+                    }
+                }
+                $query->orWhereHas('roles', function($subquery){
+                    $subquery->where('name', "like", $this->search."%");
+                });    
+            });
+        }
+
+        
+
+        if(isset($this->sort) && !empty($this->sort)){
+            $this->pagelimit = 10;
+            $this->page = 1;
+            foreach ($this->sort as $sort) {
+                $team->orderBy($sort['id'], ($sort['desc'] == true) ? 'DESC': 'ASC');
+            }
+        }
+        $team = $team->paginate($this->pagelimit, ['*'], 'pageIndex', $this->page);
 
         return response()->json(['users' => $team], 200);
     }
@@ -25,7 +74,7 @@ class TeamController extends Controller
     public function create()
     {
         try {
-            return response()->json(['roles' => Role::get()->pluck('name')], 200);
+            return response()->json(['roles' => Role::get()->pluck('name'), 'status' => ['ACTIVE', 'INACTIVE']], 200);
         } catch (\Exception $e) {
             return response()->json(["message"=> "Error", "error" => $e->getMessage()], 400);
         }
@@ -41,6 +90,7 @@ class TeamController extends Controller
             'email' => 'required|email:rfc,dns|unique:users,email',
             'password' => 'required',
             'role' => 'required',
+            'contact' => 'required|digits:10',
         ]);
 
         DB::beginTransaction();
@@ -59,7 +109,7 @@ class TeamController extends Controller
             return response()->json(['user' => $request->all()], 201);
         } catch (\Exception $e) {
             DB::rollback();
-            return response()->json(["message"=> "Error", "error" => $e->getMessage()], 400);
+            return response()->json(["message"=> "Error", "errors" => $e->getMessage()], 400);
         }
     }
 
@@ -78,7 +128,7 @@ class TeamController extends Controller
 
             return response()->json($user, 200);
         } catch (\Throwable $th) {
-            return response()->json(["message"=> "Error", "error" => $th->getMessage()], 400);
+            return response()->json(["message"=> "Error", "errors" => $th->getMessage()], 400);
         }
     }
 
@@ -95,9 +145,9 @@ class TeamController extends Controller
             });
             unset($user->roles);
 
-            return response()->json(["user"=>$user, 'roles' => Role::get()->pluck('name')], 200);
+            return response()->json(["user"=>$user, 'roles' => Role::get()->pluck('name'), 'status' => ['ACTIVE', 'INACTIVE']], 200);
         } catch (\Throwable $th) {
-            return response()->json(["message"=> "Error", "error" => $th->getMessage()], 400);
+            return response()->json(["message"=> "Error", "errors" => $th->getMessage()], 400);
         }
     }
 
@@ -111,6 +161,8 @@ class TeamController extends Controller
             'email' => 'required|email:rfc,dns|unique:users,email,'.$id,
             'password' => 'sometimes',
             'role' => 'sometimes',
+            'contact' => 'required|digits:10',
+            'status' => 'required|in:ACTIVE,INACTIVE',
         ]);
 
         DB::beginTransaction();
@@ -119,6 +171,8 @@ class TeamController extends Controller
             $user = User::findOrFail($id);
             $user->name = $request->name;
             $user->email = $request->email;
+            $user->contact = $request->contact;
+            $user->status = $request->status;
             if($request->password){
                 $user->password = \Hash::make($request->password);
             }
@@ -132,7 +186,7 @@ class TeamController extends Controller
             }
 
             DB::commit();
-            return response()->json(['user' => $request->all()], 200);
+            return response()->json(['user' => $request->all()], 201);
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json(["message"=> "Error", "error" => $e->getMessage()], 400);
