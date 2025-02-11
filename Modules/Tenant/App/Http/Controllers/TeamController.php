@@ -100,6 +100,7 @@ class TeamController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => $request->password,
+                'contact' => $request->contact,
             ]);
 
             $team->guard_name = 'sanctum';

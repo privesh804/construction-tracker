@@ -33,19 +33,24 @@ class AuthenticatedSessionController extends Controller
                 $tenants = Tenant::all();
     
                 foreach ($tenants as $tenant) {
-
                     $domain = Domain::where('tenant_id', $tenant->id)->first();
+                }
 
-                    tenancy()->initialize($tenant);
-
-                    $tenantConnection = 'tenant' . $tenant->id;
-                    $user = \DB::table("users")->where('email', $request->email)->first();
-                    
-                    if (isset($user) && !empty($user)) {
-                        $return = $domain->domain;
-                        break;
+                if(isset($domain) && !empty($domain)){
+                    foreach ($tenants as $tenant) {
+    
+                        tenancy()->initialize($tenant);
+    
+                        $tenantConnection = 'tenant' . $tenant->id;
+                        $user = \DB::table("users")->where('email', $request->email)->first();
+                        
+                        if (isset($user) && !empty($user)) {
+                            $return = $domain->domain;
+                            break;
+                        }
                     }
                 }
+
             }
 
 

@@ -24,12 +24,12 @@ class TeamController extends Controller
     {
 
         $paginateQuery = $request->all();
-
+        
         if($paginateQuery ?? false){
             $this->pagelimit = $paginateQuery['pageSize'] ?? 10;
             $this->page = $paginateQuery['pageIndex'] ?? 1;
-            $this->search = $paginateQuery['searchText'] ?? [];
-            $this->sort = $paginateQuery['sorting'] ?? [];
+            $this->search = $paginateQuery['searchText'] ?? "";
+            $this->sort = json_decode($paginateQuery['sorting'], true) ?? [];
         }
 
         $team = User::with('roles:name');
@@ -100,6 +100,7 @@ class TeamController extends Controller
                 'name' => $request->name,
                 'email' => $request->email,
                 'password' => $request->password,
+                'contact' => $request->contact,
             ]);
 
             $team->guard_name = 'sanctum';
