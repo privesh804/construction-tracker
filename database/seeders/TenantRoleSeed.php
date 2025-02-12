@@ -22,6 +22,7 @@ class TenantRoleSeed extends Seeder
             Role::firstOrCreate(['name' => 'contractors']);
             Role::firstOrCreate(['name' => 'clients']);
             Role::firstOrCreate(['name' => 'internal team']);
+            Role::firstOrCreate(['name' => 'manager']);
             $role = Role::firstOrCreate(['name' => 'admin']);
     
             $permissions = [

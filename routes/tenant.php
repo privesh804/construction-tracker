@@ -15,7 +15,7 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 /**
  * 
  */
-use Modules\Tenant\App\Http\Controllers\{AuthenticatedSessionController,TeamController, RolePermissionController};
+use Modules\Tenant\App\Http\Controllers\{AuthenticatedSessionController,TeamController, RolePermissionController, ProjectController};
 
 
 /*
@@ -54,5 +54,14 @@ Route::middleware([
         Route::get('role/{id}/edit', [RolePermissionController::class, 'edit'])->name('role.edit')->middleware('can:role-create');
         Route::put('role/{id}/update', [RolePermissionController::class, 'update'])->name('role.update')->middleware('can:role-update');
         Route::post('role/{id}/permission', [RolePermissionController::class, 'assignPermission'])->name('role.assignpermission')->middleware('can:role-update');
+    });
+
+    Route::middleware([
+        'auth:sanctum', 'tauth'
+    ])->prefix('/task-management')->group(function () {
+        Route::get('/project', [ProjectController::class, 'index'])->name('project.index');
+        Route::get('/project/create', [ProjectController::class, 'create'])->name('project.create');
+        Route::post('/project/store', [ProjectController::class, 'store'])->name('project.store');
+        Route::post('/project/upload-boq', [ProjectController::class, 'uploadBoQ'])->name('project.upload');
     });
 });

@@ -45,7 +45,7 @@ class AuthenticatedSessionController extends Controller
                         $user = \DB::table("users")->where('email', $request->email)->first();
                         
                         if (isset($user) && !empty($user)) {
-                            $return = $domain->domain;
+                            $return = $domain->domain."/login?email=".$request->email;
                             break;
                         }
                     }

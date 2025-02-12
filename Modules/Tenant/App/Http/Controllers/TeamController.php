@@ -28,10 +28,10 @@ class TeamController extends Controller
         if($paginateQuery ?? false){
             $this->pagelimit = $paginateQuery['pageSize'] ?? 10;
             $this->page = $paginateQuery['pageIndex'] ?? 1;
-            $this->search = $paginateQuery['searchText'] ?? [];
-            $this->sort = $paginateQuery['sorting'] ?? [];
+            $this->search = $paginateQuery['searchText'] ?? "";
+            $this->sort = json_decode($paginateQuery['sorting'], true) ?? [];
         }
-
+        
         $team = User::with('roles:name');
 
         $columns = [

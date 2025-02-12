@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\SuperAdmin\App\Http\Controllers\SuperAdminController;
+// use Modules\SuperAdmin\App\Http\Controllers\SuperAdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +14,6 @@ use Modules\SuperAdmin\App\Http\Controllers\SuperAdminController;
 |
 */
 
-Route::group([], function () {
-    Route::resource('superadmin', SuperAdminController::class)->names('superadmin');
-});
+// Route::group([], function () {
+//     Route::resource('superadmin', SuperAdminController::class)->names('superadmin');
+// });

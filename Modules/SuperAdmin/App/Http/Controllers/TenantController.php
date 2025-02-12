@@ -15,6 +15,64 @@ use Modules\SuperAdmin\App\Notifications\InviteTenantNotification;
 
 class TenantController extends Controller
 {
+    protected $pagelimit = 10;
+    protected $page = 1;
+    protected $search = [];
+    protected $sort = [];
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request)
+    {
+
+        $paginateQuery = $request->all();
+
+        if($paginateQuery ?? false){
+            $this->pagelimit = $paginateQuery['pageSize'] ?? 10;
+            $this->page = $paginateQuery['pageIndex'] ?? 1;
+            $this->search = $paginateQuery['searchText'] ?? "";
+            $this->sort = json_decode($paginateQuery['sorting'], true) ?? [];
+        }
+
+        $tenant = Tenant::with('domains');
+
+        $columns = [
+            'name',
+            'email',
+            'domain'
+        ];
+
+        if(isset($this->search) && !empty($this->search)){
+            $this->pagelimit = 10;
+            $this->page = 1;
+            $tenant->where(function($query) use($columns){
+                foreach ($columns as $column) {
+                    if($column == 'name'){
+                        $query->orWhere($column, "like", $this->search."%");
+                    } else if($column == 'email'){
+                        $query->orWhere('data', "like", $this->search."%");
+                    }
+                }
+                $query->orWhereHas('domains', function($subquery){
+                    $subquery->where('domain', "like", $this->search."%");
+                });    
+            });
+        }
+
+        
+
+        if(isset($this->sort) && !empty($this->sort)){
+            $this->pagelimit = 10;
+            $this->page = 1;
+            foreach ($this->sort as $sort) {
+                $tenant->orderBy($sort['id'], ($sort['desc'] == true) ? 'DESC': 'ASC');
+            }
+        }
+        $tenant = $tenant->paginate($this->pagelimit, ['*'], 'pageIndex', $this->page);
+
+        return response()->json(['tenants' => $tenant], 200);
+    }
 
     public function sendInvite(Request $request)
     {
@@ -83,6 +141,7 @@ class TenantController extends Controller
             if(isset($invite)){
                 $tenant = Tenant::create([
                     'name' => $request->name,
+                    'email' => $invite ->email
                 ]);
     
                 $tenant->domains()->create([

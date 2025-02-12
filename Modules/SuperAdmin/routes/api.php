@@ -23,8 +23,9 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware(['auth:sanctum'])->group(function(){
         /** Org Management */
-        Route::post('invite-tenant', [TenantController::class, 'sendInvite'])->name('tenant.send-invite')->middleware('permission:tenant-invite');
-        Route::post('create-tenant', [TenantController::class, 'store'])->name('tenant.create')->middleware('permission:tenant-create');
+        Route::post('invite-tenant', [TenantController::class, 'sendInvite'])->name('tenant.send-invite');//->middleware('permission:tenant-invite');
+        Route::post('create-tenant', [TenantController::class, 'store'])->name('tenant.create');//->middleware('permission:tenant-create');
+        Route::get('tenant', [TenantController::class, 'index'])->name('tenant.list');//->middleware('permission:tenant-create');
 
         /** Team Management */
         Route::get('user', [TeamController::class, 'index'])->name('teammember.index'); //->middleware('permission:team-list');
