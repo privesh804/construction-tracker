@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProjectController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,3 +22,6 @@ Route::get('/test', function (Request $request) {
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::post('/projects/import', [ProjectController::class, 'import'])->name('projects.import');
+Route::get('/projects/{project}/summary', [ProjectController::class, 'getProjectSummary'])->name('projects.summary');

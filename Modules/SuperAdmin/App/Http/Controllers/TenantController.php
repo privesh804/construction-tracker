@@ -25,7 +25,7 @@ class TenantController extends Controller
      */
     public function index(Request $request)
     {
-
+        // dd($request->user()->getAllPermissions());
         $paginateQuery = $request->all();
 
         if($paginateQuery ?? false){
