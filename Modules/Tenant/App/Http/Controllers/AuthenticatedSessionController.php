@@ -39,5 +39,14 @@ class AuthenticatedSessionController extends Controller
             return response()->json(['error' => $e->getMessage()], 400);
         }
     }
+
+    function logout(Request $request){
+        try {
+            $request->user()->currentAccessToken()->delete();
+            return response()->json([], 204);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
+    }
 }
 

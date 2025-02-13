@@ -5,11 +5,12 @@ namespace Modules\Tenant\App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Tenant\Database\factories\ProjectFactory;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Modules\Tenant\App\Models\ProjectAssignee;
 
 class Project extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuids;
 
     protected $table = "projects";
 
@@ -22,6 +23,7 @@ class Project extends Model
         "address",
         "nature",
         "start",
+        "end",
         "budget",
         "status",
         "created_by"

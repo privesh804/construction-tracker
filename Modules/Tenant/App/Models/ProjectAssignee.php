@@ -5,12 +5,14 @@ namespace Modules\Tenant\App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Tenant\Database\factories\ProjectAssigneeFactory;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+
 
 class ProjectAssignee extends Model
 {
-    use HasFactory;
+    use HasFactory, HasUuids;
 
-    protected $table = "project_assignee";
+    protected $table = "project_assignees";
 
     /**
      * The attributes that are mass assignable.
