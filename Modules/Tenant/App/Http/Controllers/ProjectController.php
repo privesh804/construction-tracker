@@ -103,78 +103,108 @@ class ProjectController extends Controller
         }
     }
 
-    function uploadBoQ(Request $request){
+
+    // Define the headings we're looking for
+    private $headings = [
+        'title' => 'Title',
+        'address' => 'Address',
+        'nature_of_project' => 'Nature of Project',
+        'employer' => 'Employer',
+        'consultant' => 'Consultant'
+    ];
+
+    public function uploadBoQ(Request $request)
+    {
         $request->validate([
             'file' => ['required', File::types(['xlsx', 'xls'])
             ->max(10 * 1024)]
         ]);
-
-        // try {
-            // $Reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
-            // $Reader->setReadDataOnly( false );
-            // $spreadSheet = $Reader->load($request->file);
-            $file = $request->file;
+        try {
+            // Load the Excel file
+            $spreadsheet = IOFactory::load($request->file('excel_file')->getPathname());
+            $worksheet = $spreadsheet->getActiveSheet();
             
-            $filetype = $file->getClientOriginalExtension();
+            $projectDetails = [];
+            $headingRows = [];
             
-            if ($filetype == 'csv') {
-            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Csv');
-            }
-            else if ($filetype == 'xlsx') {
-            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xlsx');
-            }
-            else if ($filetype == 'xls') {
-            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xls');
-            }
-            
-            /**  Load $inputFileName to a Spreadsheet Object  **/
-            $spreadsheet = $reader->load($request->file);
-
-            $excelSheet = $spreadsheet->getActiveSheet();
-            $spreadSheetAry = $excelSheet->toArray();
-            $maxCell = $excelSheet->getHighestRowAndColumn();
-            $data = $excelSheet->rangeToArray( 'A1:' . $maxCell['column'] . $maxCell['row'] );
-            $data = array_map( 'array_filter', $data );
-            $data = array_filter($data);
-            $title = self::getValuesBetweenTitleAndAddress($data);
-
-            dd($title);
-
-            
-        // } catch (\PhpOffice\PhpSpreadsheet\Exception $e) {
-        //     return response()->json(["message"=> "Error", "error" => $e->getMessage()], 400);
-        // } catch (\Exception $e) {
-        //     return response()->json(["message"=> "Error", "error" => $e->getMessage()], 400);
-        // }
-            
-    }
-
-    function getValuesBetweenTitleAndAddress($array) {
-        $startIndex = null;
-        $endIndex = null;
-        $values = [];
-
-        // Find the start and end indexes
-        foreach ($array as $index => $item) {
-            if (isset($item[1]) && strtolower($item[1]) == 'title') {
-                $startIndex = $index;
-            }
-            if (isset($item[1]) && strtolower($item[1]) == 'address:') {
-                $endIndex = $index;
-                break;  // Stop when we find Address
-            }
-        }
-
-        // If both indexes are found, extract the values between them
-        if ($startIndex !== null && $endIndex !== null) {
-            // Get values from startIndex + 1 to endIndex - 1
-            for ($i = $startIndex + 1; $i < $endIndex; $i++) {
-                if(isset($array[$i])){
-                    $values[] = $array[$i];
+            // First pass: Find the rows where our headings are
+            foreach ($worksheet->getRowIterator() as $row) {
+                $rowIndex = $row->getRowIndex();
+                $cellIterator = $row->getCellIterator();
+                $cellIterator->setIterateOnlyExistingCells(false);
+                
+                foreach ($cellIterator as $cell) {
+                    $value = trim($cell->getValue());
+                    // Remove any colon from the value for comparison
+                    $cleanValue = rtrim($value, ':');
+                    
+                    // Check if this cell contains one of our headings
+                    foreach ($this->headings as $key => $heading) {
+                        if (strcasecmp($cleanValue, $heading) === 0) {
+                            $headingRows[$key] = [
+                                'row' => $rowIndex,
+                                'column' => $cell->getColumn()
+                            ];
+                            break;
+                        }
+                    }
                 }
             }
+            
+            // Second pass: Get the values below each heading
+            foreach ($headingRows as $key => $location) {
+                $row = $location['row'];
+                $column = $location['column'];
+                $values = [];
+                
+                // Keep reading rows until we hit another heading or empty row
+                while (true) {
+                    $row++;
+                    // Try to get value from the next column (B if heading was in A, etc.)
+                    $nextColumn = ++$column;
+                    --$column; // Reset column for next iteration
+                    
+                    $cell = $worksheet->getCell($nextColumn . $row);
+                    $value = trim($cell->getValue());
+                    
+                    // Stop if we hit an empty cell or another heading
+                    if (empty($value) || $this->isHeading($value)) {
+                        break;
+                    }
+                    
+                    $values[] = $value;
+                }
+                
+                // Join multiple lines if necessary
+                $projectDetails[$key] = implode("\n", array_filter($values));
+            }
+            
+            return response()->json([
+                'success' => true,
+                'data' => $projectDetails
+            ]);
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error processing Excel file: ' . $e->getMessage()
+            ], 500);
         }
-
-        return $values;
+    }
+    
+    /**
+     * Check if a value is one of our headings
+     */
+    private function isHeading($value)
+    {
+        // Remove any colon from the value
+        $cleanValue = rtrim($value, ':');
+        
+        foreach ($this->headings as $heading) {
+            if (strcasecmp($cleanValue, $heading) === 0) {
+                return true;
+            }
+        }
+        return false;
     }
 }
