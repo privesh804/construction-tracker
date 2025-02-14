@@ -68,8 +68,9 @@ class ProjectController extends Controller
             $project->title = $request->title;
             $project->description = $request->description;
             $project->address = $request->address;
-            $project->nature = $request->nature;
-            $project->start = $request->start;
+            $project->nature = $request->category;
+            $project->start = $request->start_date;
+            $project->end = $request->end_date;
             $project->budget = $request->budget;
             $project->status = $request->priority;
             $project->created_by = $request->user()->id;

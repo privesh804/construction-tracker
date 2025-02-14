@@ -28,7 +28,7 @@ class AuthenticatedSessionController extends Controller
 
             if(isset($main) && !empty($main)){
                 $return = true;
-                return response()->json(['status' => $return]);
+                return response()->json(['status' => $return, "type"=>"Admin"]);
             } else {
                 $tenants = Tenant::all();
     
@@ -57,7 +57,7 @@ class AuthenticatedSessionController extends Controller
             if($return == false){
                 throw new \Exception("Invalid Email.", 401);
             } else {
-                return response()->json(['url' => $return]);
+                return response()->json(['url' => $return, "type"=>"Tenant"]);
             }
 
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -91,6 +91,15 @@ class AuthenticatedSessionController extends Controller
             }    
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['error' => $e->validator->errors()], 422);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 400);
+        }
+    }
+
+    function logout(Request $request){
+        try {
+            $request->user()->currentAccessToken()->delete();
+            return response()->json([], 204);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 400);
         }
